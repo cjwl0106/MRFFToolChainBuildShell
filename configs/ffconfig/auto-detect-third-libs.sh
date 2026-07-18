@@ -25,27 +25,12 @@
 
 THIRD_CFG_FLAGS=
 
+# x264 and x265 are GPL-licensed; enabling them requires --enable-gpl,
+# which conflicts with LGPL build. Disabled to keep FFmpeg under LGPL.
 echo "----------------------"
-
-pkg-config --libs x264 --silence-errors >/dev/null && enable_x264=1
-
-if [[ $enable_x264 ]];then
-    echo "[✅] --enable-libx264 : $(pkg-config --modversion x264)"
-    THIRD_CFG_FLAGS="$THIRD_CFG_FLAGS --enable-gpl --enable-libx264 --enable-encoder=libx264"
-else
-    echo "[❌] --disable-libx264"
-fi
-
+echo "[❌] --disable-libx264 (GPL license, LGPL build incompatibility)"
 echo "----------------------"
-
-pkg-config --libs x265 --silence-errors >/dev/null && enable_x265=1
-
-if [[ $enable_x265 ]];then
-    echo "[✅] --enable-libx265 : $(pkg-config --modversion x265)"
-    THIRD_CFG_FLAGS="$THIRD_CFG_FLAGS --enable-gpl --enable-libx265 --enable-encoder=libx265"
-else
-    echo "[❌] --disable-libx265"
-fi
+echo "[❌] --disable-libx265 (GPL license, LGPL build incompatibility)"
 
 # echo "----------------------"
 
@@ -132,7 +117,7 @@ pkg-config --libs openssl --silence-errors >/dev/null && enable_openssl=1
 
 if [[ $enable_openssl ]];then
     echo "[✅] --enable-openssl : $(pkg-config --modversion openssl)"
-    THIRD_CFG_FLAGS="$THIRD_CFG_FLAGS --enable-nonfree --enable-openssl"
+    THIRD_CFG_FLAGS="$THIRD_CFG_FLAGS --enable-openssl"
 else
     echo "[❌] --disable-openssl"
 fi
@@ -214,9 +199,9 @@ if [[ $result ]]; then
     pkg-config --libs dvdread --silence-errors >/dev/null && enable_dvdread=1
     pkg-config --libs dvdnav --silence-errors >/dev/null && enable_dvdnav=1
     if [[ $enable_dvdread && $enable_dvdnav ]];then
-        echo "[✅] --enable-demuxer=dvdvideo --enable-gpl --enable-libdvdread : $(pkg-config --modversion dvdread)"
-        #libdvdread is gpl and --enable-gpl is not specified.
-        THIRD_CFG_FLAGS="$THIRD_CFG_FLAGS --enable-libdvdread --enable-libdvdnav --enable-demuxer=dvdvideo --enable-gpl"
+        # libdvdread/libdvdnav are GPL-licensed; enabling them requires --enable-gpl,
+        # which conflicts with LGPL build. Disabled to keep FFmpeg under LGPL.
+        echo "[❌] --disable-dvdvideo (libdvdread/libdvdnav require GPL, LGPL build incompatibility)"
     else
         echo "[❌] --disable-dvdvideo"
     fi

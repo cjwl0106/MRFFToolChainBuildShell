@@ -18,9 +18,9 @@
 export LIB_NAME='openssl'
 export LIPO_LIBS="libssl libcrypto"
 export GIT_LOCAL_REPO=extra/openssl
-export GIT_COMMIT=OpenSSL_1_1_1w
+export GIT_COMMIT=openssl-3.6.3
 export REPO_DIR=openssl
-export GIT_REPO_VERSION=1.1.1w
+export GIT_REPO_VERSION=3.6.3
 
 # you can export GIT_OPUS_UPSTREAM=git@xx:yy/openssl.git use your mirror
 if [[ "$GIT_OPENSSL_UPSTREAM" != "" ]] ;then
@@ -29,8 +29,8 @@ else
     export GIT_UPSTREAM=https://github.com/openssl/openssl.git
 fi
 
-# pre compiled
-export PRE_COMPILE_TAG_TVOS=openssl-1.1.1w-250318092610
-export PRE_COMPILE_TAG_MACOS=openssl-1.1.1w-250318092610
-export PRE_COMPILE_TAG_IOS=openssl-1.1.1w-250318092610
-export PRE_COMPILE_TAG_ANDROID=openssl-1.1.1w-250310112430
+# pre compiled (need rebuild for openssl-3.6.3, clear tags to force source build)
+# export PRE_COMPILE_TAG_TVOS=openssl-1.1.1w-250318092610
+# export PRE_COMPILE_TAG_MACOS=openssl-1.1.1w-250318092610
+# export PRE_COMPILE_TAG_IOS=openssl-1.1.1w-250318092610
+# export PRE_COMPILE_TAG_ANDROID=openssl-1.1.1w-250310112430

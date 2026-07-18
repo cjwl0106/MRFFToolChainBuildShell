@@ -42,11 +42,9 @@ echo "CROSS_TOP:$CROSS_TOP"
 echo "CROSS_SDK:$CROSS_SDK"
 # no-hw no-asm
 
-CFG_FLAGS="no-shared no-engine no-apps no-dynamic-engine no-static-engine \
-        no-dso no-ui-console no-tests \
+CFG_FLAGS="no-shared no-tests \
         --prefix=$MR_BUILD_PREFIX \
-        --openssldir=$MR_BUILD_PREFIX \
-        enable-ec_nistp_64_gcc_128"
+        --openssldir=$MR_BUILD_PREFIX"
 
 if [[ "$MR_DEBUG" != "debug" ]]; then
     CFG_FLAGS="$CFG_FLAGS --release"
@@ -89,5 +87,5 @@ echo "----------------------"
 echo "[*] compile $LIB_NAME"
 echo "----------------------"
 
-make build_libs -j$MR_HOST_NPROC >/dev/null
+make build_sw -j$MR_HOST_NPROC >/dev/null
 make install_dev >/dev/null

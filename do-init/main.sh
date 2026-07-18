@@ -48,9 +48,11 @@ function do_init_a_lib()
 {
     local lib_config="$1"
     lib_config=$(make_absolute_path "$lib_config")
-    [[ ! -f "$lib_config" ]] && (echo "❌$lib_config config not exist,init will stop.";exit 1;) 
+    [[ ! -f "$lib_config" ]] && (echo "❌$lib_config config not exist,init will stop.";exit 1;)
     echo "===[init $lib_config]===================="
     [[ ! -f "$lib_config" ]] && (echo "❌$lib_config config not exist,init will stop.";exit 1;)
+    # Reset PATCH_DIR to prevent residue from previous lib config
+    unset PATCH_DIR
     source "$lib_config"
     export MR_LIB_CONFIG_PATH="$lib_config"
     ./init-repo.sh

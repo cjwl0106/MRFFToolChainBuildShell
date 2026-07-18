@@ -50,8 +50,7 @@ case $_MR_ARCH in
     ;;
 esac
 
-CFG_FLAGS="no-shared no-engine no-apps no-dynamic-engine no-static-engine \
-        no-dso no-ui-console no-tests \
+CFG_FLAGS="no-shared no-tests \
         --prefix=$MR_BUILD_PREFIX \
         --openssldir=$MR_BUILD_PREFIX \
         -U__ANDROID_API__ -D__ANDROID_API__=$MR_ANDROID_API \
@@ -94,5 +93,5 @@ echo "----------------------"
 echo "[*] compile $LIB_NAME"
 echo "----------------------"
 
-make build_libs -j$MR_HOST_NPROC >/dev/null
+make build_sw -j$MR_HOST_NPROC >/dev/null
 make install_dev >/dev/null

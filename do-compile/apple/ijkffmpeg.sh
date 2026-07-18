@@ -88,7 +88,7 @@ pkg-config --libs openssl --silence-errors >/dev/null && enable_openssl=1
 
 if [[ $enable_openssl ]];then
     echo "[✅] --enable-openssl : $(pkg-config --modversion openssl)"
-    FFMPEG_CFG_FLAGS="$FFMPEG_CFG_FLAGS --enable-nonfree --enable-openssl"
+    FFMPEG_CFG_FLAGS="$FFMPEG_CFG_FLAGS --enable-openssl"
 else
     echo "[❌] --disable-openssl"
 fi
