@@ -46,6 +46,11 @@ CFG_FLAGS="no-shared no-tests \
         --prefix=$MR_BUILD_PREFIX \
         --openssldir=$MR_BUILD_PREFIX"
 
+# tvOS doesn't support fork(), so skip building apps which use fork()
+if [[ "$MR_PLAT" == "tvos" ]]; then
+    CFG_FLAGS="$CFG_FLAGS no-apps"
+fi
+
 if [[ "$MR_DEBUG" != "debug" ]]; then
     CFG_FLAGS="$CFG_FLAGS --release"
 fi
