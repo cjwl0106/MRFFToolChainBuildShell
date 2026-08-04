@@ -36,6 +36,16 @@ cd "$THIS_DIR"
 function parse_lib_config() {
     local lib_config="$1"
     local config_file_name=$(basename "$lib_config")
+    while [[ -L "$lib_config" ]]; do
+        local target=$(readlink "$lib_config")
+        if [[ "$target" == /* ]]; then
+            lib_config="$target"
+        else
+            local dir=$(dirname "$lib_config")
+            lib_config="$dir/$target"
+        fi
+        config_file_name=$(basename "$lib_config")
+    done
     local config_name=${config_file_name%.sh}
 
     # 获取当前平台对应的 PRE_COMPILE_TAG（如 PRE_COMPILE_TAG_IOS）
