@@ -28,8 +28,8 @@ export LIB_DEPENDS_BIN="cmake"
 export CMAKE_TARGETS_NAME=SoundTouch
 export GIT_LOCAL_REPO=extra/soundtouch
 export REPO_DIR=soundtouch
-export GIT_COMMIT=2.4.0
-export GIT_REPO_VERSION=2.4.0
+export GIT_COMMIT=2.4.1
+export GIT_REPO_VERSION=2.4.1
 export PATCH_DIR=../../patches/soundtouch
 
 # you can export GIT_SOUNDTOUCH_UPSTREAM=git@xx:yy/soundtouch.git use your mirror
@@ -40,7 +40,7 @@ else
 fi
 
 # pre compiled
-export PRE_COMPILE_TAG_TVOS=soundtouch-2.4.0-260228135702
-export PRE_COMPILE_TAG_MACOS=soundtouch-2.4.0-260228135702
-export PRE_COMPILE_TAG_IOS=soundtouch-2.4.0-260228135702
-export PRE_COMPILE_TAG_ANDROID=soundtouch-2.4.0-260228135702
+export PRE_COMPILE_TAG_TVOS=soundtouch-2.4.1-260824190319
+export PRE_COMPILE_TAG_MACOS=soundtouch-2.4.1-260824190319
+export PRE_COMPILE_TAG_IOS=soundtouch-2.4.1-260824190319
+export PRE_COMPILE_TAG_ANDROID=soundtouch-2.4.1-260824190319

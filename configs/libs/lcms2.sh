@@ -19,9 +19,9 @@ export LIB_NAME='lcms2'
 export LIPO_LIBS="liblcms2"
 export LIB_DEPENDS_BIN="cmake"
 export GIT_LOCAL_REPO=extra/lcms2
-export GIT_COMMIT=lcms2.17
+export GIT_COMMIT=lcms2.19.1
 export REPO_DIR=lcms2
-export GIT_REPO_VERSION=lcms2.17
+export GIT_REPO_VERSION=lcms2.19.1
 
 # you can export GIT_LCMS2_UPSTREAM=git@xx:yy/lcms2.git use your mirror
 if [[ "$GIT_LCMS2_UPSTREAM" != "" ]] ;then
@@ -29,4 +29,6 @@ if [[ "$GIT_LCMS2_UPSTREAM" != "" ]] ;then
 else
     export GIT_UPSTREAM=https://github.com/mm2/Little-CMS.git
 fi
-export PRE_COMPILE_TAG_MACOS=lcms2-lcms2.17-260325152711
+export PRE_COMPILE_TAG_MACOS=lcms2-lcms2.19.1-260911141941
+export PRE_COMPILE_TAG_IOS=lcms2-lcms2.19.1-260911141941
+export PRE_COMPILE_TAG_TVOS=lcms2-lcms2.19.1-260911141941

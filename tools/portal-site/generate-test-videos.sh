@@ -15,8 +15,8 @@ set -e
 
 # Duration parameter (default to 5 seconds for fast CI execution)
 DURATION=${1:-15}
-# Output directory (default to docs/videos relative to the workspace root)
-OUTPUT_DIR=${2:-./docs/videos}
+# Output directory (default to build/docs/videos relative to the workspace root)
+OUTPUT_DIR=${2:-./build/docs/videos}
 
 mkdir -p "$OUTPUT_DIR"
 
@@ -159,6 +159,38 @@ echo -e "\033[34m[*] Case 6.1: Generating Interlaced Video (interleave_top)...\0
     -pix_fmt yuv420p \
     -t "${DURATION}" \
     -y "$OUTPUT_DIR/test_comb.mp4"
+
+# ---------------------------------------------------------------------
+# PITFALL 7: Transparent Background Video (VP9 alpha channel / yuva420p)
+# ---------------------------------------------------------------------
+# NOTE: Currently DISABLED because $FFMPEG_BIN is built without the VP9
+# encoder (--enable-libvpx). The transparent sample is tiny, so a pre-generated
+# copy ships under tools/test_transparent.webm instead. Once the toolchain is
+# rebuilt with libvpx-vp9, uncomment the block below to generate it on the fly.
+#
+# Do NOT use the 'drawbox' filter on a fully transparent canvas -- it blends
+# against alpha=0 and silently yields an all-transparent (empty) video.
+# Composite an opaque shape onto the transparent base with 'overlay' instead.
+#
+# echo -e "\033[34m[*] Case 7.1: Generating Transparent WebM (VP9 yuva420p, alpha channel)...\033[0m"
+# "$FFMPEG_BIN" -f lavfi -i "color=c=black@0.0:s=640x480:rate=30,format=yuva420p" \
+#     -f lavfi -i "color=c=red:s=80x80:rate=30,format=yuva420p" \
+#     -filter_complex "[0][1]overlay=x='100+t*80':y=200:format=auto" \
+#     -c:v libvpx-vp9 \
+#     -pix_fmt yuva420p \
+#     -auto-alt-ref 0 \
+#     -t "${DURATION}" \
+#     -y "$OUTPUT_DIR/test_transparent.webm"
+
+# Ship the pre-generated transparent sample until the VP9 encoder is available.
+SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
+PREBUILT_TRANSPARENT="$SCRIPT_DIR/test_transparent.webm"
+if [[ -f "$PREBUILT_TRANSPARENT" ]]; then
+    echo -e "\033[34m[*] Case 7.1: Copying pre-generated Transparent WebM (VP9 encoder unavailable)...\033[0m"
+    cp "$PREBUILT_TRANSPARENT" "$OUTPUT_DIR/test_transparent.webm"
+else
+    echo -e "\033[33m[!] Skipping Transparent WebM: $PREBUILT_TRANSPARENT not found.\033[0m"
+fi
 
 # ---------------------------------------------------------------------
 # VIRTUAL SOURCES: Generate showcase videos for virtual test sources

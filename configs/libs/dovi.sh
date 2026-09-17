@@ -19,10 +19,10 @@ export LIB_NAME='dovi'
 export LIPO_LIBS="libdovi"
 export LIB_DEPENDS_BIN="rustup cargo"
 export GIT_LOCAL_REPO=extra/dovi
-export GIT_COMMIT=libdovi-3.3.2
+export GIT_COMMIT=libdovi-3.4.0
 export GIT_WITH_SUBMODULE=0
 export REPO_DIR=dovi
-export GIT_REPO_VERSION=3.3.2
+export GIT_REPO_VERSION=3.4.0
 
 if [[ "$GIT_DOVI_UPSTREAM" != "" ]] ;then
     export GIT_UPSTREAM="$GIT_DOVI_UPSTREAM"
@@ -30,4 +30,6 @@ else
     export GIT_UPSTREAM=https://github.com/quietvoid/dovi_tool.git
 fi
 
-export PRE_COMPILE_TAG_MACOS=dovi-3.3.2-260326175522
+export PRE_COMPILE_TAG_MACOS=dovi-3.4.0-260911161032
+export PRE_COMPILE_TAG_IOS=dovi-3.4.0-260911161032
+export PRE_COMPILE_TAG_TVOS=dovi-3.4.0-260911161032

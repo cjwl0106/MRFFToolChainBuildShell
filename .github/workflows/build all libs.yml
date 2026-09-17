@@ -74,7 +74,7 @@ on:
           - false
       verbose:
         description: 'print detail logs'
-        required: false
+        required: true
         type: choice
         default: 'false'
         options:
@@ -105,10 +105,11 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
     - name: Install cargo-c
-      run: cargo install cargo-c
+      uses: taiki-e/install-action@v2
+      with:
+        tool: cargo-c
     - name: One Step
       run: |
-
         Platform=${{ inputs.platform }}
         DryRun=${{ inputs.dryrun }}
         Verbose=${{ inputs.verbose }}

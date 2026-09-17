@@ -26,9 +26,9 @@ export LIB_NAME='harfbuzz'
 export LIPO_LIBS="libharfbuzz libharfbuzz-subset"
 export LIB_DEPENDS_BIN="meson pkg-config"
 export GIT_LOCAL_REPO=extra/harfbuzz
-export GIT_COMMIT=14.3.0
+export GIT_COMMIT=14.3.1
 export REPO_DIR=harfbuzz
-export GIT_REPO_VERSION=14.3.0
+export GIT_REPO_VERSION=14.3.1
 
 # you can export GIT_HARFBUZZ_UPSTREAM=git@xx:yy/HARFBUZZ.git use your mirror
 if [[ "$GIT_HARFBUZZ_UPSTREAM" != "" ]] ;then
@@ -38,7 +38,7 @@ else
 fi
 
 # pre compiled
-export PRE_COMPILE_TAG_TVOS=harfbuzz-14.3.0-260408154245
-export PRE_COMPILE_TAG_MACOS=harfbuzz-14.3.0-260408154245
-export PRE_COMPILE_TAG_IOS=harfbuzz-14.3.0-260408154245
-export PRE_COMPILE_TAG_ANDROID=harfbuzz-14.3.0-260408154245
+export PRE_COMPILE_TAG_TVOS=harfbuzz-14.3.1-260824184504
+export PRE_COMPILE_TAG_MACOS=harfbuzz-14.3.1-260824184504
+export PRE_COMPILE_TAG_IOS=harfbuzz-14.3.1-260824184504
+export PRE_COMPILE_TAG_ANDROID=harfbuzz-14.3.1-260824184504

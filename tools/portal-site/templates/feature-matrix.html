@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>📊 FFmpeg Feature Evolution Matrix</title>
+    <link rel="stylesheet" href="GitHub-2025.css">
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <style>
+        :root {
+            --bg-color: #f8fafc;
+            --card-border: #e2e8f0;
+            --color-blue: #2563eb;
+            --text-secondary: #64748b;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            box-sizing: border-box;
+            min-width: 200px;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 45px;
+            position: relative;
+            min-height: 100vh;
+        }
+
+        /* Ambient Glowing Backgrounds */
+        body::before {
+            content: '';
+            position: fixed;
+            width: 450px;
+            height: 450px;
+            background: radial-gradient(circle, rgba(37, 99, 235, 0.08) 0%, transparent 70%);
+            top: -100px;
+            left: -100px;
+            z-index: -1;
+            pointer-events: none;
+            filter: blur(50px);
+            animation: floatGlow 15s infinite alternate ease-in-out;
+        }
+
+        body::after {
+            content: '';
+            position: fixed;
+            width: 550px;
+            height: 550px;
+            background: radial-gradient(circle, rgba(124, 58, 237, 0.06) 0%, transparent 70%);
+            bottom: -150px;
+            right: -100px;
+            z-index: -1;
+            pointer-events: none;
+            filter: blur(60px);
+            animation: floatGlowAlt 20s infinite alternate ease-in-out;
+        }
+
+        @keyframes floatGlow {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(100px, 50px) scale(1.1); }
+        }
+
+        @keyframes floatGlowAlt {
+            0% { transform: translate(0, 0) scale(1.1); }
+            100% { transform: translate(-120px, -50px) scale(0.9); }
+        }
+
+        @media (max-width: 767px) {
+            body { padding: 15px; }
+        }
+
+        .markdown-body table {
+            display: table;
+            width: 100%;
+            margin-top: 0;
+            margin-bottom: 30px;
+            background: #ffffff;
+            border-radius: 0 0 8px 8px;
+            border-collapse: separate;
+            border-spacing: 0;
+            box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+        }
+
+        .markdown-body del,
+        .markdown-body s,
+        del,
+        s {
+            color: #94a3b8 !important;
+            text-decoration: line-through !important;
+            opacity: 0.75;
+        }
+
+        /* 浮动/悬浮分类标题 (Sticky H2) */
+        .markdown-body h2 {
+            position: -webkit-sticky;
+            position: sticky;
+            top: 0;
+            background: rgba(248, 250, 252, 0.98);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            z-index: 100;
+            padding: 10px 16px;
+            margin-top: 36px;
+            margin-bottom: 0;
+            border-bottom: none;
+            border-radius: 8px 8px 0 0;
+            box-shadow: none;
+            height: 46px;
+            box-sizing: border-box;
+            display: flex;
+            align-items: center;
+        }
+
+        /* 浮动表头 (Sticky Table Header) */
+        .markdown-body table thead th {
+            position: -webkit-sticky;
+            position: sticky;
+            top: 46px;
+            background-color: #f1f5f9;
+            z-index: 90;
+            box-shadow: 0 2px 4px rgba(15, 23, 42, 0.05);
+        }
+
+        /* 浮动侧边分类快速跳转导航栏 (Floating Quick Jump Panel) */
+        .floating-nav-panel {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            z-index: 999;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 12px;
+            box-shadow: 0 8px 30px rgba(15, 23, 42, 0.12);
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            max-width: 220px;
+            max-height: calc(100vh - 80px);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .floating-nav-panel.collapsed {
+            right: 0;
+            padding: 8px 6px 8px 8px;
+            border-radius: 12px 0 0 12px;
+            border-right: none;
+            box-shadow: -4px 6px 20px rgba(15, 23, 42, 0.15);
+            max-width: 36px;
+            gap: 0;
+            cursor: pointer;
+        }
+
+        .category-nav-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            padding: 0 2px;
+            margin-bottom: 4px;
+        }
+
+        .floating-nav-panel.collapsed .category-nav-header {
+            margin-bottom: 0;
+            justify-content: center;
+        }
+
+        .category-nav-title {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            white-space: nowrap;
+        }
+
+        .floating-nav-panel.collapsed .category-nav-title {
+            display: none;
+        }
+
+        .category-nav-toggle {
+            background: #f1f5f9;
+            border: 1px solid #e2e8f0;
+            outline: none;
+            cursor: pointer;
+            padding: 4px;
+            border-radius: 6px;
+            color: #64748b;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+            width: 22px;
+            height: 22px;
+        }
+
+        .category-nav-toggle:hover {
+            background: #e2e8f0;
+            color: var(--color-blue);
+        }
+
+        .category-nav-toggle .toggle-icon {
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* 展开状态箭头向右(收起)，折叠状态箭头向左(展开) */
+        .floating-nav-panel.collapsed .category-nav-toggle .toggle-icon {
+            transform: rotate(180deg);
+        }
+
+        .category-nav-body {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            overflow-y: auto;
+            max-height: calc(100vh - 140px);
+        }
+
+        .category-nav-body::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .category-nav-body::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+
+        .floating-nav-panel.collapsed .category-nav-body {
+            display: none;
+        }
+
+        .category-nav-item {
+            font-size: 12px;
+            font-weight: 500;
+            padding: 6px 10px;
+            border-radius: 8px;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            color: #334155;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: block;
+        }
+
+        .category-nav-item:hover {
+            background: var(--color-blue);
+            color: #ffffff;
+            border-color: var(--color-blue);
+            transform: translateX(-2px);
+            box-shadow: 0 2px 6px rgba(37, 99, 235, 0.25);
+        }
+
+        /* 集成在面板里的回到顶部按钮 */
+        .category-nav-top-item {
+            margin-top: 4px;
+            background: #eff6ff !important;
+            border: 1px solid #bfdbfe !important;
+            color: var(--color-blue) !important;
+            font-weight: 600 !important;
+            text-align: center;
+        }
+
+        .category-nav-top-item:hover {
+            background: var(--color-blue) !important;
+            color: #ffffff !important;
+            border-color: var(--color-blue) !important;
+            box-shadow: 0 2px 6px rgba(37, 99, 235, 0.25);
+            transform: translateY(-1px) !important;
+        }
+
+        @media (max-width: 900px) {
+            .floating-nav-panel {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body class="markdown-body">
+
+    <article id="content">
+    </article>
+
+    <script type="text/markdown" id="markdown-source">
+{{MARKDOWN_CONTENT}}
+    </script>
+
+    <script>
+        marked.setOptions({
+            gfm: true,
+            breaks: false
+        });
+        const src = document.getElementById('markdown-source').textContent;
+        const container = document.getElementById('content');
+        container.innerHTML = marked.parse(src);
+
+        // 渲染 GitHub-style 警告框 (Alerts)
+        container.querySelectorAll('blockquote').forEach(bq => {
+            const text = bq.textContent.trim();
+            const match = text.match(/^\[!(NOTE|TIP|IMPORTANT|WARNING|CAUTION)\]/i);
+            if (match) {
+                const type = match[1].toUpperCase();
+                bq.className = 'markdown-alert markdown-alert-' + type.toLowerCase();
+                
+                const titleText = type.charAt(0) + type.slice(1).toLowerCase();
+                let iconSvg = '';
+                if (type === 'NOTE') {
+                    iconSvg = '<svg class="octicon octicon-info" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true" fill="currentColor" style="margin-right: 8px; display: inline-block; vertical-align: text-bottom;"><path d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8Zm8-6.5a6.5 6.5 0 1 0 0 13 6.5 6.5 0 0 0 0-13ZM6.5 7.75A.75.75 0 0 1 7.25 7h1a.75.75 0 0 1 .75.75v2.75h.25a.75.75 0 0 1 0 1.5h-2a.75.75 0 0 1 0-1.5h.25v-2h-.25a.75.75 0 0 1-.75-.75ZM8 6a1 1 0 1 1 0-2 1 1 0 0 1 0 2Z"></path></svg>';
+                } else if (type === 'TIP') {
+                    iconSvg = '<svg class="octicon octicon-light-bulb" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true" fill="currentColor" style="margin-right: 8px; display: inline-block; vertical-align: text-bottom;"><path d="M8 1.5c-2.363 0-4 1.832-4 4 0 1.053.383 1.896.9 2.525.503.613.9 1.157.9 2.225a.75.75 0 0 0 .75.75h3a.75.75 0 0 0 .75-.75c0-1.068.397-1.612.9-2.225.517-.629.9-1.472.9-2.525 0-2.168-1.637-4-4-4Zm0 11.5c-.822 0-1.5.618-1.5 1.5A1.5 1.5 0 0 0 8 16c.822 0 1.5-.618 1.5-1.5A1.5 1.5 0 0 0 8 13Z"></path></svg>';
+                } else if (type === 'IMPORTANT') {
+                    iconSvg = '<svg class="octicon octicon-report" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true" fill="currentColor" style="margin-right: 8px; display: inline-block; vertical-align: text-bottom;"><path d="M0 1.75C0 .784.784 0 1.75 0h12.5C15.216 0 16 .784 16 1.75v10.5A1.75 1.75 0 0 1 14.25 14H8.75L5 15.75V14H1.75A1.75 1.75 0 0 1 0 12.25Zm1.75-.25a.25.25 0 0 0-.25.25v10.5c0 .138.112.25.25.25h3.75a.75.75 0 0 1 .75.75v1.07l2.28-1.07a.75.75 0 0 1 .47-.16h5.3a.25.25 0 0 0 .25-.25V1.75a.25.25 0 0 0-.25-.25ZM9 9H7V5h2Zm0 2.25h-2v-1.5h2Z"></path></svg>';
+                } else if (type === 'WARNING') {
+                    iconSvg = '<svg class="octicon octicon-alert" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true" fill="currentColor" style="margin-right: 8px; display: inline-block; vertical-align: text-bottom;"><path d="M6.457 1.047c.66-1.125 2.426-1.125 3.086 0l6.03 10.273c.63 1.074-.143 2.43-1.543 2.43H1.97c-1.4 0-2.173-1.356-1.543-2.43L6.457 1.047ZM9 5H7v4h2V5Zm0 5.25H7v1.5h2v-1.5Z"></path></svg>';
+                } else if (type === 'CAUTION') {
+                    iconSvg = '<svg class="octicon octicon-stop" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true" fill="currentColor" style="margin-right: 8px; display: inline-block; vertical-align: text-bottom;"><path d="M4.47.22A.749.749 0 0 1 5 0h6c.199 0 .389.079.53.22l4.25 4.25c.141.14.22.331.22.53v6c0 .199-.079.389-.22.53l-4.25 4.25A.749.749 0 0 1 11 16H5a.749.749 0 0 1-.53-.22L.22 11.53A.749.749 0 0 1 0 11V5c0-.199.079-.389.22-.53Zm.84 1.28L1.5 5.31v5.38l3.81 3.81h5.38l3.81-3.81V5.31L10.69 1.5H5.31ZM8 4a1 1 0 1 1 0 2 1 1 0 0 1 0-2Zm1 5H7v4h2V9Z"></path></svg>';
+                }
+                
+                const titleHtml = '<p class="markdown-alert-title">' + iconSvg + titleText + '</p>';
+                let html = bq.innerHTML;
+                html = html.replace(/\[!(NOTE|TIP|IMPORTANT|WARNING|CAUTION)\](\s*<br\s*\/?>)?\s*/i, '');
+                bq.innerHTML = titleHtml + html;
+            }
+        });
+
+        // 生成分类快捷悬浮导航栏 (Floating Quick Nav Bar)
+        const h2List = container.querySelectorAll('h2');
+        if (h2List.length > 0) {
+            const navContainer = document.createElement('div');
+            navContainer.className = 'floating-nav-panel';
+            navContainer.id = 'floating-nav-panel';
+            
+            const navHeader = document.createElement('div');
+            navHeader.className = 'category-nav-header';
+
+            const navTitle = document.createElement('span');
+            navTitle.className = 'category-nav-title';
+            navTitle.textContent = '⚡ Categories';
+            navHeader.appendChild(navTitle);
+
+            const toggleBtn = document.createElement('button');
+            toggleBtn.className = 'category-nav-toggle';
+            toggleBtn.title = '收起分类导航';
+            toggleBtn.innerHTML = '<svg class="toggle-icon" viewBox="0 0 16 16" width="12" height="12" fill="currentColor"><path d="M6.22 3.22a.75.75 0 0 1 1.06 0l4.25 4.25a.75.75 0 0 1 0 1.06l-4.25 4.25a.75.75 0 0 1-1.06-1.06L9.69 8 6.22 4.28a.75.75 0 0 1 0-1.06Z"></path></svg>';
+            navHeader.appendChild(toggleBtn);
+            navContainer.appendChild(navHeader);
+
+            const navBody = document.createElement('div');
+            navBody.className = 'category-nav-body';
+
+            let isCollapsed = localStorage.getItem('category_nav_collapsed') === 'true';
+            const applyCollapsed = () => {
+                if (isCollapsed) {
+                    navContainer.classList.add('collapsed');
+                    toggleBtn.title = '展开分类导航';
+                } else {
+                    navContainer.classList.remove('collapsed');
+                    toggleBtn.title = '收起分类导航';
+                }
+            };
+            applyCollapsed();
+
+            toggleBtn.onclick = (e) => {
+                e.stopPropagation();
+                isCollapsed = !isCollapsed;
+                localStorage.setItem('category_nav_collapsed', isCollapsed);
+                applyCollapsed();
+            };
+
+            navContainer.onclick = (e) => {
+                if (isCollapsed) {
+                    isCollapsed = false;
+                    localStorage.setItem('category_nav_collapsed', isCollapsed);
+                    applyCollapsed();
+                }
+            };
+
+            h2List.forEach((h2, idx) => {
+                const id = 'category-' + idx;
+                
+                // 在每个 sticky h2 前插入一个不受 sticky 影响的静态定位锚点
+                const anchor = document.createElement('div');
+                anchor.id = id;
+                anchor.style.cssText = 'position: relative; top: 0; height: 0; margin: 0; padding: 0; visibility: hidden; pointer-events: none;';
+                h2.parentNode.insertBefore(anchor, h2);
+
+                const link = document.createElement('a');
+                link.href = '#' + id;
+                link.textContent = h2.textContent;
+                link.title = h2.textContent;
+                link.className = 'category-nav-item';
+                link.onclick = (e) => {
+                    e.preventDefault();
+                    const targetTop = anchor.getBoundingClientRect().top + window.pageYOffset;
+                    window.scrollTo({ top: Math.max(0, targetTop), behavior: 'instant' });
+                    history.pushState(null, null, '#' + id);
+                };
+                navBody.appendChild(link);
+            });
+
+            // 回到顶部按钮 (集成在 Categories 面板底部)
+            const topLink = document.createElement('a');
+            topLink.href = '#';
+            topLink.className = 'category-nav-item category-nav-top-item';
+            topLink.innerHTML = '↑ Back to Top';
+            topLink.onclick = (e) => {
+                e.preventDefault();
+                window.scrollTo({ top: 0, behavior: 'instant' });
+                history.pushState(null, null, ' ');
+            };
+            navBody.appendChild(topLink);
+
+            navContainer.appendChild(navBody);
+            document.body.appendChild(navContainer);
+        }
+    </script>
+</body>
+</html>

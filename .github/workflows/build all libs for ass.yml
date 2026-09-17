@@ -1,0 +1,193 @@
+on:
+  # push:
+  #   branches: [master]
+  workflow_dispatch:
+    inputs:
+      os:
+        description: 'macos version'
+        required: false
+        type: choice
+        default: 'macos-15'
+        options:
+          - macos-13
+          - macos-14
+          - macos-15
+          - macos-26
+      platform:
+        description: 'choose a platform for compile'
+        required: false
+        type: choice
+        default: 'all'
+        options:
+          - apple
+          - android
+          - ios
+          - tvos
+          - macos
+          - all
+      first_library:
+        description: 'choose the first library for compile'
+        required: true
+        type: choice
+        default: 'xml2'
+        options:
+          - xml2
+          - unibreak
+          - fribidi
+          - freetype
+          - fontconfig
+          - harfbuzz
+          - ass
+      dryrun:
+        description: 'just run workflow,but not deploy'
+        required: false
+        type: choice
+        default: 'false'
+        options:
+          - true
+          - false
+      verbose:
+        description: 'print detail logs'
+        required: true
+        type: choice
+        default: 'false'
+        options:
+          - true
+          - false
+  pull_request:
+    branches: [master]
+
+name: build ass libs
+
+jobs:
+  build:
+    name: compile all libs for ${{ inputs.platform }} then deploy
+    runs-on: ${{ inputs.os }}
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+    - uses: nttld/setup-ndk@v1
+      id: setup-ndk
+      if: |
+        github.event.inputs.platform == 'all' || 
+        github.event.inputs.platform == 'android'
+      with:
+        ndk-version: r27c
+        add-to-path: true
+        link-to-sdk: true
+        local-cache: false
+    - name: Checkout code
+      uses: actions/checkout@v4
+    - name: Install cargo-c
+      uses: taiki-e/install-action@v2
+      with:
+        tool: cargo-c
+    - name: One Step
+      run: |
+        Platform=${{ inputs.platform }}
+        DryRun=${{ inputs.dryrun }}
+        Verbose=${{ inputs.verbose }}
+        compile_lib() {
+          local lib_name=$1
+          local platform=$Platform
+          
+          if [[ "$lib_name" == "fontconfig" ]]; then
+            if [[ "$platform" == "all" ]]; then
+              echo "force platform to android for fontconfig"
+              platform='android'
+            elif [[ "$platform" != "android" ]]; then
+              echo "Skip fontconfig for $platform"
+              return
+            fi
+          fi
+
+          if [[ "$lib_name" == "webp" ]]; then
+            if [[ "$platform" == "android" ]]; then
+              echo "Skip webp for android"
+              return
+            elif [[ "$platform" == "all" ]]; then
+              echo "Skip webp for android"
+              platform='apple'
+            fi
+          fi
+
+          if [[ "$lib_name" == "moltenvk" ]]; then
+            if [[ "$platform" == "android" ]]; then
+              echo "Skip moltenvk for android"
+              return
+            elif [[ "$platform" == "all" ]]; then
+              echo "Skip moltenvk for android"
+              platform='apple'
+            fi
+          fi
+
+          if [[ "$lib_name" == "shaderc" ]]; then
+            if [[ "$platform" == "android" ]]; then
+              echo "Skip shaderc for android"
+              return
+            elif [[ "$platform" == "all" ]]; then
+              echo "Skip shaderc for android"
+              platform='apple'
+            fi
+          fi
+
+          if [[ "$lib_name" == "dovi" ]]; then
+            if [[ "$platform" == "android" ]]; then
+              echo "Skip dovi for android"
+              return
+            elif [[ "$platform" == "all" ]]; then
+              echo "Skip dovi for android"
+              platform='apple'
+            fi
+          fi
+
+          if [[ "$lib_name" == "placebo" ]]; then
+            if [[ "$platform" == "android" ]]; then
+              echo "Skip placebo for android"
+              return
+            elif [[ "$platform" == "all" ]]; then
+              echo "Skip placebo for android"
+              platform='apple'
+            fi
+          fi
+
+          echo "------compile $platform $lib_name------------------------------------"
+          rm -rf build || git reset --hard || git pull origin
+          .github/workflows/install-dependencies.sh $lib_name $platform  # 补全依赖安装步骤
+          .github/workflows/onestep.sh $lib_name $platform $DryRun $Verbose
+        }
+        
+        libs=(
+          "xml2"
+          "unibreak"
+          "fribidi"
+          "freetype"
+          "fontconfig"
+          "harfbuzz"
+          "ass"
+        )
+
+        first=${{ inputs.first_library }}
+        echo "------compile from $first------------------------------------"
+        # 找到first_library在数组中的索引
+        start_index=-1
+        for i in "${!libs[@]}"; do
+          if [[ "${libs[$i]}" == "$first" ]]; then
+            start_index=$i
+            break
+          fi
+        done
+        # 如果找到了 first_library，则截取数组
+        if [[ $start_index -ne -1 ]]; then
+          # 仅保留从 start_index 开始到最后的部分
+          libs=("${libs[@]:$start_index}")
+        else
+          echo "Warning: first_library $first not found in the library list."
+        fi
+
+        # 循环遍历所有库执行编译
+        for lib in "${libs[@]}"; do
+          compile_lib "$lib"
+        done
+      env:
+        ANDROID_NDK_HOME: ${{ steps.setup-ndk.outputs.ndk-path }}

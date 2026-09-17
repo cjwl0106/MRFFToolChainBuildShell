@@ -7,7 +7,14 @@
 set -e
 set -o pipefail
 
-export CONFIG_NAME=$1
+CONFIG_FILE="./configs/libs/${1}.sh"
+if [[ -L "$CONFIG_FILE" ]]; then
+    REAL_CONFIG_FILE=$(realpath "$CONFIG_FILE")
+    CONFIG_BASE=$(basename "$REAL_CONFIG_FILE")
+    export CONFIG_NAME="${CONFIG_BASE%.sh}"
+else
+    export CONFIG_NAME=$1
+fi
 export PLAT=$2
 export MR_PLAT=$PLAT
 
@@ -113,7 +120,7 @@ function compile_tvos_platform
 {
     echo "---do compile tvos libs--------------------------------------"
 
-    local log_file="$DIST_DIR/android-compile-log-$RELEASE_VERSION.md"
+    local log_file="$DIST_DIR/tvos-compile-log-$RELEASE_VERSION.md"
 
     if [[ $VERBOSE ]];then
         ./main.sh compile -p tvos -c build -l ${CONFIG_NAME} 2>&1 | tee -a "$log_file"
@@ -159,12 +166,15 @@ function make_xcfmwk_bundle()
 function replace_tag()
 {
     local file=$1
+    if [ -L "$file" ]; then
+        file=$(realpath "$file")
+    fi
     local key=$2
 
     # check PRE_COMPILE_TAG_IOS
     if grep -q "$key" "$file"; then
         # replace PRE_COMPILE_TAG_IOS=new_tag
-        sed -i "" "s/^export $key=.*/export $key=$TAG/" $file
+        sed -i "" "s/^export $key=.*/export $key=$TAG/" "$file"
     else
         # PRE_COMPILE_TAG_IOS not found, append PRE_COMPILE_TAG_IOS
         [ -n "$(tail -c1 "$file")" ] && echo "" >> "$file"
@@ -175,6 +185,9 @@ function replace_tag()
 function upgrade()
 {
     local file="configs/libs/${CONFIG_NAME}.sh"
+    if [ -L "$file" ]; then
+        file=$(realpath "$file")
+    fi
     case $PLAT in
         ios)
             replace_tag $file PRE_COMPILE_TAG_IOS

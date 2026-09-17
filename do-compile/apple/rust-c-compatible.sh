@@ -17,6 +17,10 @@
 
 set -e
 
+if [[ -d "$HOME/.cargo/bin" ]]; then
+    export PATH="$HOME/.cargo/bin:$PATH"
+fi
+
 if ! command -v rustup &> /dev/null; then
     return 0
 fi
@@ -26,7 +30,16 @@ macos)
     rustup target add aarch64-apple-darwin x86_64-apple-darwin
     ;;
 tvos)
-    rustup target add aarch64-apple-tvos aarch64-apple-tvos-sim x86_64-apple-tvos
+    # tvOS targets are Tier 3 in Rust, so they require nightly toolchain with -Z build-std
+    if ! rustup toolchain list | grep -q "^nightly"; then
+        rustup toolchain install nightly --component rust-src
+    else
+        rustup component add rust-src --toolchain nightly || true
+    fi
+    nightly_bin_dir=$(dirname "$(rustup which --toolchain nightly rustc)")
+    if [[ -d "$nightly_bin_dir" ]]; then
+        export PATH="$nightly_bin_dir:$PATH"
+    fi
     ;;
 ios)
     rustup target add aarch64-apple-ios aarch64-apple-ios-sim x86_64-apple-ios
@@ -111,7 +124,11 @@ rust_c_build() {
     fi
 
     local target
-    target=$(arch_target "$MR_ARCH" "$MR_PLAT")
+    target=$(arch_target "$_MR_ARCH" "$MR_PLAT")
+
+    if [[ "$MR_PLAT" == "tvos" ]]; then
+        extra_args="$extra_args -Z build-std"
+    fi
 
     echo "----------------------"
     echo "[*] compile $LIB_NAME"

@@ -21,9 +21,9 @@ export LIB_DEPENDS_BIN="meson ninja"
 # placebo depends on lcms2 and shaderc (for SPIRV), vulkan backend uses MoltenVK
 export LIB_DEPENDS='lcms2 shaderc moltenvk dovi'
 export GIT_LOCAL_REPO=extra/placebo
-export GIT_COMMIT=v7.349.0
+export GIT_COMMIT=v7.360.1
 export REPO_DIR=placebo
-export GIT_REPO_VERSION=v7.349.0
+export GIT_REPO_VERSION=v7.360.1
 
 # you can export GIT_LIBPLACEB0_UPSTREAM=git@xx:yy/libplacebo.git use your mirror
 if [[ "$GIT_LIBPLACEB0_UPSTREAM" != "" ]] ;then
@@ -31,4 +31,6 @@ if [[ "$GIT_LIBPLACEB0_UPSTREAM" != "" ]] ;then
 else
     export GIT_UPSTREAM=https://github.com/haasn/libplacebo.git
 fi
-export PRE_COMPILE_TAG_MACOS=placebo-v7.349.0-260330183040
+export PRE_COMPILE_TAG_MACOS=placebo-v7.360.1-260911161546
+export PRE_COMPILE_TAG_IOS=placebo-v7.360.1-260911161546
+export PRE_COMPILE_TAG_TVOS=placebo-v7.360.1-260911161546

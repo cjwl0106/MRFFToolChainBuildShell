@@ -21,9 +21,9 @@ export LIB_NAME='fontconfig'
 export LIPO_LIBS="libfontconfig"
 export LIB_DEPENDS_BIN="meson pkg-config"
 export GIT_LOCAL_REPO=extra/fontconfig
-export GIT_COMMIT=2.17.1
+export GIT_COMMIT=2.18.3
 export REPO_DIR=fontconfig
-export GIT_REPO_VERSION=2.17.1
+export GIT_REPO_VERSION=2.18.3
 
 # you can export GIT_FONTCONFIG_UPSTREAM=git@xx:yy/fontconfig.git use your mirror
 if [[ "$GIT_FONTCONFIG_UPSTREAM" != "" ]] ;then
@@ -36,4 +36,4 @@ fi
 export PRE_COMPILE_TAG_IOS=fontconfig-2.16.0-250226074147
 export PRE_COMPILE_TAG_TVOS=fontconfig-2.16.0-250226074147
 export PRE_COMPILE_TAG_MACOS=fontconfig-2.16.0-250226074147
-export PRE_COMPILE_TAG_ANDROID=fontconfig-2.17.1-260408154148
+export PRE_COMPILE_TAG_ANDROID=fontconfig-2.18.3-260827104627
