@@ -23,9 +23,9 @@ export LIPO_LIBS="libavcodec libavformat libavutil libswscale libswresample liba
 export LIB_DEPENDS_BIN="nasm pkg-config"
 export GIT_LOCAL_REPO=extra/ffmpeg
 export REPO_DIR=ffmpeg8
-export PATCH_DIR=../../patches/ffmpeg-n8.1.2
-export GIT_COMMIT=n8.1.2
-export GIT_REPO_VERSION=8.1.2
+export PATCH_DIR=../../patches/ffmpeg-n8.1.3
+export GIT_COMMIT=n8.1.3
+export GIT_REPO_VERSION=8.1.3
 
 # you can export GIT_FFMPEG_UPSTREAM=git@xx:yy/FFmpeg.git use your mirror
 if [[ "$GIT_FFMPEG_UPSTREAM" != "" ]] ;then
@@ -36,7 +36,7 @@ fi
 
 
 # pre compiled
-export PRE_COMPILE_TAG_IOS=ffmpeg8-8.1.2-260827144915
-export PRE_COMPILE_TAG_MACOS=ffmpeg8-8.1.2-260902113951
-export PRE_COMPILE_TAG_TVOS=ffmpeg8-8.1.2-260827144915
-export PRE_COMPILE_TAG_ANDROID=ffmpeg8-8.1.2-260827144915
+# export PRE_COMPILE_TAG_IOS=ffmpeg8-8.1.2-260827144915
+# export PRE_COMPILE_TAG_MACOS=ffmpeg8-8.1.2-260902113951
+# export PRE_COMPILE_TAG_TVOS=ffmpeg8-8.1.2-260827144915
+# export PRE_COMPILE_TAG_ANDROID=ffmpeg8-8.1.2-260827144915

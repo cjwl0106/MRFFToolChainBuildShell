@@ -26,9 +26,9 @@ export LIB_NAME='unibreak'
 export LIPO_LIBS="libunibreak"
 export LIB_DEPENDS_BIN="autoconf automake libtool"
 export GIT_LOCAL_REPO=extra/unibreak
-export GIT_COMMIT=libunibreak_7_0
+export GIT_COMMIT=libunibreak_8_0
 export REPO_DIR=unibreak
-export GIT_REPO_VERSION=7.0
+export GIT_REPO_VERSION=8.0
 
 # you can export GIT_UNIBREAK_UPSTREAM=git@xx:yy/UNIBREAK.git use your mirror
 if [[ "$GIT_UNIBREAK_UPSTREAM" != "" ]] ;then
@@ -38,7 +38,7 @@ else
 fi
 
 # pre compiled
-export PRE_COMPILE_TAG_TVOS=unibreak-7.0-260824183653
-export PRE_COMPILE_TAG_MACOS=unibreak-7.0-260824183653
-export PRE_COMPILE_TAG_IOS=unibreak-7.0-260824183653
-export PRE_COMPILE_TAG_ANDROID=unibreak-7.0-260824183653
+# export PRE_COMPILE_TAG_TVOS=unibreak-7.0-260824183653
+# export PRE_COMPILE_TAG_MACOS=unibreak-7.0-260824183653
+# export PRE_COMPILE_TAG_IOS=unibreak-7.0-260824183653
+# export PRE_COMPILE_TAG_ANDROID=unibreak-7.0-260824183653

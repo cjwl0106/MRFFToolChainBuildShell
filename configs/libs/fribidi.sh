@@ -26,9 +26,9 @@ export LIB_NAME='fribidi'
 export LIPO_LIBS="libfribidi"
 export LIB_DEPENDS_BIN="meson pkg-config"
 export GIT_LOCAL_REPO=extra/fribidi
-export GIT_COMMIT=v1.0.16
+export GIT_COMMIT=v1.0.17
 export REPO_DIR=fribidi
-export GIT_REPO_VERSION=1.0.16
+export GIT_REPO_VERSION=1.0.17
 
 # you can export GIT_FRIBIDI_UPSTREAM=git@xx:yy/FRIBIDI.git use your mirror
 if [[ "$GIT_FRIBIDI_UPSTREAM" != "" ]] ;then
@@ -38,7 +38,7 @@ else
 fi
 
 # pre compiled
-export PRE_COMPILE_TAG_TVOS=fribidi-1.0.16-260824184014
-export PRE_COMPILE_TAG_MACOS=fribidi-1.0.16-260824184014
-export PRE_COMPILE_TAG_IOS=fribidi-1.0.16-260824184014
-export PRE_COMPILE_TAG_ANDROID=fribidi-1.0.16-260824184014
+# export PRE_COMPILE_TAG_TVOS=fribidi-1.0.16-260824184014
+# export PRE_COMPILE_TAG_MACOS=fribidi-1.0.16-260824184014
+# export PRE_COMPILE_TAG_IOS=fribidi-1.0.16-260824184014
+# export PRE_COMPILE_TAG_ANDROID=fribidi-1.0.16-260824184014

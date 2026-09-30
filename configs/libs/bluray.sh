@@ -27,10 +27,10 @@ export LIPO_LIBS="libbluray"
 # export LIB_DEPENDS_BIN="autoconf automake libtool pkg-config"
 export LIB_DEPENDS_BIN="meson ninja pkg-config"
 export GIT_LOCAL_REPO=extra/bluray
-export GIT_COMMIT=1.5.0
+export GIT_COMMIT=1.5.1
 export GIT_WITH_SUBMODULE=1
 export REPO_DIR=bluray
-export GIT_REPO_VERSION=1.5.0
+export GIT_REPO_VERSION=1.5.1
 export PATCH_DIR=../../patches/bluray-1.5.0
 
 # you can export GIT_BLURAY_UPSTREAM=git@xx:yy/libbluray.git use your mirror
@@ -41,7 +41,7 @@ else
 fi
 
 # pre compiled
-export PRE_COMPILE_TAG_TVOS=bluray-1.5.0-260827104804
-export PRE_COMPILE_TAG_MACOS=bluray-1.5.0-260827104804
-export PRE_COMPILE_TAG_IOS=bluray-1.5.0-260827104804
-export PRE_COMPILE_TAG_ANDROID=bluray-1.5.0-260827104804
+# export PRE_COMPILE_TAG_TVOS=bluray-1.5.0-260827104804
+# export PRE_COMPILE_TAG_MACOS=bluray-1.5.0-260827104804
+# export PRE_COMPILE_TAG_IOS=bluray-1.5.0-260827104804
+# export PRE_COMPILE_TAG_ANDROID=bluray-1.5.0-260827104804

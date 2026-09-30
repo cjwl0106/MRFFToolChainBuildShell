@@ -26,9 +26,9 @@ export LIB_NAME='xml2'
 export LIPO_LIBS="libxml2"
 export LIB_DEPENDS_BIN="meson pkg-config"
 export GIT_LOCAL_REPO=extra/xml2
-export GIT_COMMIT=v2.15.3
+export GIT_COMMIT=v2.15.4
 export REPO_DIR=xml2
-export GIT_REPO_VERSION=2.15.3
+export GIT_REPO_VERSION=2.15.4
 
 # you can export GIT_XML2_UPSTREAM=git@xx:yy/xml2.git use your mirror
 if [[ "$GIT_XML2_UPSTREAM" != "" ]] ;then
@@ -38,7 +38,7 @@ else
 fi
 
 # pre compiled
-export PRE_COMPILE_TAG_TVOS=xml2-2.15.3-260827104329
-export PRE_COMPILE_TAG_MACOS=xml2-2.15.3-260827104329
-export PRE_COMPILE_TAG_IOS=xml2-2.15.3-260827104329
-export PRE_COMPILE_TAG_ANDROID=xml2-2.15.3-260827104329
+# export PRE_COMPILE_TAG_TVOS=xml2-2.15.3-260827104329
+# export PRE_COMPILE_TAG_MACOS=xml2-2.15.3-260827104329
+# export PRE_COMPILE_TAG_IOS=xml2-2.15.3-260827104329
+# export PRE_COMPILE_TAG_ANDROID=xml2-2.15.3-260827104329

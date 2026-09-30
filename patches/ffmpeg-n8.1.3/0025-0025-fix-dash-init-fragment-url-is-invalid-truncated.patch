@@ -1,0 +1,44 @@
+From 028b513740b9b5c77a4f080fab941c7b59d93964 Mon Sep 17 00:00:00 2001
+From: weloy <banwenlong@hikvision.com.cn>
+Date: Wed, 30 Sep 2026 14:53:01 +0800
+Subject: [PATCH 25/28] 
+ 0025-fix-dash-init-fragment-url-is-invalid-truncated-bug
+
+---
+ libavformat/dashdec.c | 12 +++++++++++-
+ 1 file changed, 11 insertions(+), 1 deletion(-)
+
+diff --git a/libavformat/dashdec.c b/libavformat/dashdec.c
+index 68b1104ebd..f39f8bc841 100644
+--- a/libavformat/dashdec.c
++++ b/libavformat/dashdec.c
+@@ -481,6 +481,10 @@ static char *get_content_url(xmlNodePtr *baseurl_nodes,
+     int i;
+     char *text;
+     char *url = NULL;
++    
++    if (strlen(val) >= max_url_size) {
++        max_url_size += 256;
++    }
+     char *tmp_str = av_mallocz(max_url_size);
+ 
+     if (!tmp_str)
+@@ -499,8 +503,14 @@ static char *get_content_url(xmlNodePtr *baseurl_nodes,
+         }
+     }
+ 
+-    if (val)
++    if (val) {
++        int tmp_max_url_size = strlen(tmp_str) + strlen(val) + 1; 
++        if (tmp_max_url_size > max_url_size) {
++            max_url_size = tmp_max_url_size;
++            tmp_str = av_realloc(tmp_str, max_url_size);
++        }
+         ff_make_absolute_url(tmp_str, max_url_size, tmp_str, val);
++    }
+ 
+     if (rep_id_val) {
+         url = av_strireplace(tmp_str, "$RepresentationID$", rep_id_val);
+-- 
+2.50.1 (Apple Git-155)
+
