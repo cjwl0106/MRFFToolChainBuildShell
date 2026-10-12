@@ -44,18 +44,18 @@ case $LIB_NAME in
     ;;
     ffmpeg8)
         if [[ $PLAT == all ]];then
-            ./main.sh install -l 'openssl3 opus bluray dav1d dvdnav uavs3d smb2 webp' -p ios
-            ./main.sh install -l 'openssl3 opus bluray dav1d dvdnav uavs3d smb2 webp' -p tvos
-            ./main.sh install -l 'openssl3 opus bluray dav1d dvdnav uavs3d smb2 webp' -p macos
-            ./main.sh install -l 'openssl3 opus bluray dav1d dvdnav uavs3d smb2 soundtouch' -p android
+            ./main.sh install -l 'openssl3 opus bluray dav1d uavs3d smb2 webp' -p ios
+            ./main.sh install -l 'openssl3 opus bluray dav1d uavs3d smb2 webp' -p tvos
+            ./main.sh install -l 'openssl3 opus bluray dav1d uavs3d smb2 webp' -p macos
+            ./main.sh install -l 'openssl3 opus bluray dav1d uavs3d smb2 soundtouch' -p android
         elif [[ $PLAT == apple ]];then
-            ./main.sh install -l 'openssl3 opus bluray dav1d dvdnav uavs3d smb2 webp' -p ios
-            ./main.sh install -l 'openssl3 opus bluray dav1d dvdnav uavs3d smb2 webp' -p tvos
-            ./main.sh install -l 'openssl3 opus bluray dav1d dvdnav uavs3d smb2 webp' -p macos
+            ./main.sh install -l 'openssl3 opus bluray dav1d uavs3d smb2 webp' -p ios
+            ./main.sh install -l 'openssl3 opus bluray dav1d uavs3d smb2 webp' -p tvos
+            ./main.sh install -l 'openssl3 opus bluray dav1d uavs3d smb2 webp' -p macos
         else
-            ./main.sh install -l 'openssl3 opus bluray dav1d dvdnav uavs3d smb2' -p $PLAT
-            if [[ $PLAT == android ]];then
-                ./main.sh install -l 'soundtouch' -p android
+            ./main.sh install -l 'openssl3 opus bluray dav1d uavs3d smb2' -p $PLAT
+            if [[ $PLAT == android || $PLAT == ohos ]];then
+                ./main.sh install -l 'soundtouch' -p $PLAT
             else
                 ./main.sh install -l 'webp' -p $PLAT
             fi
@@ -76,8 +76,8 @@ case $LIB_NAME in
             ./main.sh install -l 'openssl3 opus bluray dav1d dvdnav uavs3d smb2 webp' -p macos
         else
             ./main.sh install -l 'openssl3 opus bluray dav1d dvdnav uavs3d smb2' -p $PLAT
-            if [[ $PLAT == android ]];then
-                ./main.sh install -l 'soundtouch' -p android
+            if [[ $PLAT == android || $PLAT == ohos ]];then
+                ./main.sh install -l 'soundtouch' -p $PLAT
             else
                 ./main.sh install -l 'webp' -p $PLAT
             fi
@@ -97,8 +97,8 @@ case $LIB_NAME in
             ./main.sh install -l 'openssl3 opus bluray dav1d dvdread uavs3d smb2' -p $PLAT
         fi
 
-        if [[ $PLAT == android ]];then
-            ./main.sh install -l 'soundtouch' -p android
+        if [[ $PLAT == android || $PLAT == ohos ]];then
+            ./main.sh install -l 'soundtouch' -p $PLAT
         fi
     ;;
     ffmpeg5)
@@ -115,8 +115,8 @@ case $LIB_NAME in
             ./main.sh install -l 'openssl3 opus bluray dav1d dvdread uavs3d' -p $PLAT
         fi
 
-        if [[ $PLAT == android ]];then
-            ./main.sh install -l 'soundtouch' -p android
+        if [[ $PLAT == android || $PLAT == ohos ]];then
+            ./main.sh install -l 'soundtouch' -p $PLAT
         fi
     ;;
     ffmpeg4)
@@ -133,8 +133,8 @@ case $LIB_NAME in
             ./main.sh install -l 'openssl3 opus bluray' -p $PLAT
         fi
 
-        if [[ $PLAT == android ]];then
-            ./main.sh install -l 'soundtouch' -p android
+        if [[ $PLAT == android || $PLAT == ohos ]];then
+            ./main.sh install -l 'soundtouch' -p $PLAT
         fi
     ;;
     ijkffmpeg)
@@ -151,8 +151,8 @@ case $LIB_NAME in
             ./main.sh install -l 'openssl' -p $PLAT
         fi
 
-        if [[ $PLAT == android ]];then
-            ./main.sh install -l 'soundtouch' -p android
+        if [[ $PLAT == android || $PLAT == ohos ]];then
+            ./main.sh install -l 'soundtouch' -p $PLAT
         fi
     ;;
     fftutorial)
@@ -198,6 +198,8 @@ case $LIB_NAME in
         fi
         if [[ $PLAT == android || $PLAT == all ]];then
             ./main.sh install -p android -l 'freetype'
+        elif [[ $PLAT == ohos ]];then
+            ./main.sh install -p ohos -l 'freetype'
         fi
     ;;
     dvdnav)

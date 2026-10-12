@@ -64,6 +64,9 @@ case $MR_PLAT in
     android)
         plat=android
     ;;
+    ohos)
+        plat=ohos
+    ;;
 esac
 
 # init 和 install 不区分平台，直接路由到 do-init/main.sh 或 do-install/main.sh

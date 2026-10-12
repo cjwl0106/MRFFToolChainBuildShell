@@ -25,12 +25,27 @@
 
 THIRD_CFG_FLAGS=
 
-# x264 and x265 are GPL-licensed; enabling them requires --enable-gpl,
-# which conflicts with LGPL build. Disabled to keep FFmpeg under LGPL.
 echo "----------------------"
-echo "[❌] --disable-libx264 (GPL license, LGPL build incompatibility)"
+
+pkg-config --libs x264 --silence-errors >/dev/null && enable_x264=1
+
+if [[ $enable_x264 ]];then
+    echo "[✅] --enable-libx264 : $(pkg-config --modversion x264)"
+    THIRD_CFG_FLAGS="$THIRD_CFG_FLAGS --enable-gpl --enable-libx264 --enable-encoder=libx264"
+else
+    echo "[❌] --disable-libx264"
+fi
+
 echo "----------------------"
-echo "[❌] --disable-libx265 (GPL license, LGPL build incompatibility)"
+
+pkg-config --libs x265 --silence-errors >/dev/null && enable_x265=1
+
+if [[ $enable_x265 ]];then
+    echo "[✅] --enable-libx265 : $(pkg-config --modversion x265)"
+    THIRD_CFG_FLAGS="$THIRD_CFG_FLAGS --enable-gpl --enable-libx265 --enable-encoder=libx265"
+else
+    echo "[❌] --disable-libx265"
+fi
 
 # echo "----------------------"
 
@@ -111,18 +126,6 @@ has_feature() {
 }
 
 echo "----------------------"
-# use pkg-config fix ff4.0--ijk0.8.8--20210426--001 use openssl 1_1_1m occur can't find openssl error.
-
-pkg-config --libs openssl --silence-errors >/dev/null && enable_openssl=1
-
-if [[ $enable_openssl ]];then
-    echo "[✅] --enable-openssl : $(pkg-config --modversion openssl)"
-    THIRD_CFG_FLAGS="$THIRD_CFG_FLAGS --enable-openssl"
-else
-    echo "[❌] --disable-openssl"
-fi
-
-echo "----------------------"
 
 pkg-config --libs opus --silence-errors >/dev/null && enable_opus=1
 
@@ -193,15 +196,17 @@ fi
 
 echo "----------------------"
 
+is_gpl=0
 #不确定7代之前的版本是否支持dvdvideo
 result=$(gt_or_equal "$GIT_REPO_VERSION" "7.1.1")
 if [[ $result ]]; then
     pkg-config --libs dvdread --silence-errors >/dev/null && enable_dvdread=1
     pkg-config --libs dvdnav --silence-errors >/dev/null && enable_dvdnav=1
     if [[ $enable_dvdread && $enable_dvdnav ]];then
-        # libdvdread/libdvdnav are GPL-licensed; enabling them requires --enable-gpl,
-        # which conflicts with LGPL build. Disabled to keep FFmpeg under LGPL.
-        echo "[❌] --disable-dvdvideo (libdvdread/libdvdnav require GPL, LGPL build incompatibility)"
+        echo "[✅] --enable-demuxer=dvdvideo --enable-gpl --enable-libdvdread : $(pkg-config --modversion dvdread)"
+        #libdvdread is gpl and --enable-gpl is not specified.
+        THIRD_CFG_FLAGS="$THIRD_CFG_FLAGS --enable-libdvdread --enable-libdvdnav --enable-demuxer=dvdvideo --enable-gpl"
+        is_gpl=1
     else
         echo "[❌] --disable-dvdvideo"
     fi
@@ -213,12 +218,28 @@ else
         if [[ $enable_dvdread ]];then
             echo "[✅] --enable-libdvdread : $(pkg-config --modversion dvdread)"
             THIRD_CFG_FLAGS="$THIRD_CFG_FLAGS --enable-libdvdread --enable-protocol=dvd"
+            is_gpl=1
         else
             echo "[❌] --disable-dvd protocol"
         fi
         echo "----------------------"
     fi
 fi
+
+# use pkg-config fix ff4.0--ijk0.8.8--20210426--001 use openssl 1_1_1m occur can't find openssl error.
+pkg-config --libs openssl --silence-errors >/dev/null && enable_openssl=1
+
+if [[ $enable_openssl ]];then
+    echo "[✅] --enable-openssl : $(pkg-config --modversion openssl)"
+    THIRD_CFG_FLAGS="$THIRD_CFG_FLAGS --enable-openssl"
+    if [[ $is_gpl -eq 1 ]]; then
+        THIRD_CFG_FLAGS="$THIRD_CFG_FLAGS --enable-nonfree"
+    fi
+else
+    echo "[❌] --disable-openssl"
+fi
+
+echo "----------------------"
 
 result=$(gt_or_equal "$GIT_REPO_VERSION" "5")
 if [[ $result ]]; then
@@ -344,6 +365,18 @@ case "$MR_PLAT" in
     THIRD_CFG_FLAGS="$THIRD_CFG_FLAGS --disable-bzlib"
     if [[ "$MR_ARCH" == "armv7a" || "$MR_ARCH" == "arm64" ]]; then
         # enable asm
+        THIRD_CFG_FLAGS="$THIRD_CFG_FLAGS --enable-neon"
+        THIRD_CFG_FLAGS="$THIRD_CFG_FLAGS --enable-asm --enable-inline-asm"
+    else
+        THIRD_CFG_FLAGS="$THIRD_CFG_FLAGS --disable-neon"
+        THIRD_CFG_FLAGS="$THIRD_CFG_FLAGS --disable-asm --disable-inline-asm"
+    fi
+    ;;
+    ohos)
+    # no mediacodec/jni on HarmonyOS; software decode only. musl: no iconv/bzlib.
+    THIRD_CFG_FLAGS="$THIRD_CFG_FLAGS --disable-iconv"
+    THIRD_CFG_FLAGS="$THIRD_CFG_FLAGS --disable-bzlib"
+    if [[ "$MR_ARCH" == "arm64" ]]; then
         THIRD_CFG_FLAGS="$THIRD_CFG_FLAGS --enable-neon"
         THIRD_CFG_FLAGS="$THIRD_CFG_FLAGS --enable-asm --enable-inline-asm"
     else
