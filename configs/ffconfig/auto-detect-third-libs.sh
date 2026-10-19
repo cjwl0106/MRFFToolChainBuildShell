@@ -351,15 +351,21 @@ case "$MR_PLAT" in
     # enable videotoolbox hwaccel
     THIRD_CFG_FLAGS="$THIRD_CFG_FLAGS --enable-videotoolbox"
     THIRD_CFG_FLAGS="$THIRD_CFG_FLAGS --enable-hwaccel=*_videotoolbox"
+    if [[ "$MR_PLAT" == "macos" && "$MR_ARCH" == "x86_64" ]]; then
+        THIRD_CFG_FLAGS="$THIRD_CFG_FLAGS --disable-hwaccel=vp9_videotoolbox"
+        echo "[❌] --disable-hwaccel=vp9_videotoolbox for macos x86_64,https://trac.ffmpeg.org/ticket/9599"
+    fi
     # enable iconv
     THIRD_CFG_FLAGS="$THIRD_CFG_FLAGS --enable-iconv"
     ;;
     android)
     # enable mediacodec hwaccel
+    # FFmpeg exposes MediaCodec as decoders only (there is no *_mediacodec
+    # hwaccel in libavcodec/hwaccels.h), so enable them all by glob, just like
+    # the apple branch enables all *_videotoolbox hwaccels.
     THIRD_CFG_FLAGS="$THIRD_CFG_FLAGS --enable-jni"
     THIRD_CFG_FLAGS="$THIRD_CFG_FLAGS --enable-mediacodec"
-    THIRD_CFG_FLAGS="$THIRD_CFG_FLAGS --enable-decoder=h264_mediacodec --enable-hwaccel=h264_mediacodec"
-    THIRD_CFG_FLAGS="$THIRD_CFG_FLAGS --enable-decoder=h265_mediacodec --enable-hwaccel=h265_mediacodec"
+    THIRD_CFG_FLAGS="$THIRD_CFG_FLAGS --enable-decoder=*_mediacodec"
     # disable iconv
     THIRD_CFG_FLAGS="$THIRD_CFG_FLAGS --disable-iconv"
     THIRD_CFG_FLAGS="$THIRD_CFG_FLAGS --disable-bzlib"
