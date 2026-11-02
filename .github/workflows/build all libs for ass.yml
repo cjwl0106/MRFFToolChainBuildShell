@@ -13,6 +13,7 @@ on:
           - macos-14
           - macos-15
           - macos-26
+          - macos-26-intel
       platform:
         description: 'choose a platform for compile'
         required: false
@@ -21,6 +22,7 @@ on:
         options:
           - apple
           - android
+          - ohos
           - ios
           - tvos
           - macos
@@ -38,8 +40,8 @@ on:
           - fontconfig
           - harfbuzz
           - ass
-      dryrun:
-        description: 'just run workflow,but not deploy'
+      draft:
+        description: 'create a draft release with assets and notes; do not update published dependency tags'
         required: false
         type: choice
         default: 'false'
@@ -66,6 +68,12 @@ jobs:
     env:
       GH_TOKEN: ${{ github.token }}
     steps:
+    - name: Checkout code
+      uses: actions/checkout@v5
+    - name: Setup HarmonyOS native SDK
+      if: inputs.platform == 'ohos' || inputs.platform == 'all'
+      shell: bash
+      run: python3 .github/workflows/setup-ohos-sdk.py
     - uses: nttld/setup-ndk@v1
       id: setup-ndk
       if: |
@@ -76,8 +84,6 @@ jobs:
         add-to-path: true
         link-to-sdk: true
         local-cache: false
-    - name: Checkout code
-      uses: actions/checkout@v4
     - name: Install cargo-c
       uses: taiki-e/install-action@v2
       with:
@@ -85,17 +91,19 @@ jobs:
     - name: One Step
       run: |
         Platform=${{ inputs.platform }}
-        DryRun=${{ inputs.dryrun }}
+        Draft=${{ inputs.draft }}
         Verbose=${{ inputs.verbose }}
         compile_lib() {
           local lib_name=$1
           local platform=$Platform
           
+          # fontconfig is built for Android and HarmonyOS; the shared "all"
+          # selection still routes it to Android only.
           if [[ "$lib_name" == "fontconfig" ]]; then
             if [[ "$platform" == "all" ]]; then
               echo "force platform to android for fontconfig"
               platform='android'
-            elif [[ "$platform" != "android" ]]; then
+            elif [[ "$platform" != "android" && "$platform" != "ohos" ]]; then
               echo "Skip fontconfig for $platform"
               return
             fi
@@ -152,9 +160,9 @@ jobs:
           fi
 
           echo "------compile $platform $lib_name------------------------------------"
-          rm -rf build || git reset --hard || git pull origin
+          rm -rf build || { echo 'cannot clean build directory' >&2; exit 1; }
           .github/workflows/install-dependencies.sh $lib_name $platform  # 补全依赖安装步骤
-          .github/workflows/onestep.sh $lib_name $platform $DryRun $Verbose
+          .github/workflows/onestep.sh $lib_name $platform $Draft $Verbose
         }
         
         libs=(

@@ -21,6 +21,18 @@ set -e
 THIS_DIR=$(DIRNAME=$(dirname "$0"); cd "$DIRNAME"; pwd)
 cd "$THIS_DIR"
 
+# Local libraries use checked-in sources instead of cloning a remote repository.
+if [[ -n "$LOCAL_SOURCE_DIR" ]]; then
+    source_dir=$(make_absolute_path "$(dirname "$MR_LIB_CONFIG_PATH")/$LOCAL_SOURCE_DIR")
+    [[ -d "$source_dir" ]] || { echo "Missing local source: $source_dir" >&2; exit 1; }
+    for arch in $MR_ACTIVE_ARCHS; do
+        dest_repo="${MR_SRC_ROOT}/$REPO_DIR-$arch"
+        mkdir -p "$dest_repo"
+        cp -R "$source_dir/." "$dest_repo/"
+    done
+    exit 0
+fi
+
 echo "=== [$0] check env begin==="
 env_assert "REPO_DIR"
 env_assert "GIT_COMMIT"
@@ -55,14 +67,8 @@ function pull_common() {
             git fetch --all --tags
         fi
     else
-        if [[ "$SKIP_PULL_BASE" == "1" ]]; then
-            echo "== local repo $REPO_DIR not exist,must clone by net firstly. =="
-            echo "try:unset SKIP_PULL_BASE"
-            exit -1
-        else
-            git clone $GIT_UPSTREAM $GIT_LOCAL_REPO
-            cd "$GIT_LOCAL_REPO"
-        fi
+        git clone "$GIT_UPSTREAM" "$GIT_LOCAL_REPO"
+        cd "$GIT_LOCAL_REPO"
     fi
     
     # fix fatal: 'stable' is not a commit and a branch 'localBranch' cannot be created from it

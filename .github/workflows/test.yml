@@ -1,24 +1,83 @@
+# https://github.com/actions/runner-images
+
 on:
   # push:
   #   branches: [master]
   workflow_dispatch:
-  pull_request:
-    branches: [master]
+    inputs:
+      os:
+        description: 'macos version'
+        required: false
+        type: choice
+        default: 'macos-26'
+        options:
+          - macos-13
+          - macos-14
+          - macos-15
+          - macos-15-intel
+          - macos-26
+          - macos-26-intel
+      platform:
+        description: 'choose a platform for compile'
+        required: false
+        type: choice
+        default: 'all'
+        options:
+          - apple
+          - android
+          - ohos
+          - all
+          - ios
+          - tvos
+          - macos
+      draft:
+        description: 'create a draft release with assets and notes; do not update published dependency tags'
+        required: false
+        type: choice
+        default: 'true'
+        options:
+          - true
+          - false
+      verbose:
+        description: 'print detail logs'
+        required: true
+        type: choice
+        default: 'false'
+        options:
+          - true
+          - false
 
 name: Test Release
 
+permissions:
+  contents: write
+
 jobs:
   build:
-    name: compile none then deploy
-    runs-on: macos-15
+    name: compile test for ${{ inputs.platform }} then deploy
+    runs-on: ${{ inputs.os }}
     env:
       GH_TOKEN: ${{ github.token }}
     steps:
     - name: Checkout code
-      uses: actions/checkout@v4
-    - name: Install cargo-c
-      uses: taiki-e/install-action@v2
+      uses: actions/checkout@v5
+    - name: Setup HarmonyOS native SDK
+      if: inputs.platform == 'ohos' || inputs.platform == 'all'
+      shell: bash
+      run: python3 .github/workflows/setup-ohos-sdk.py
+    - uses: nttld/setup-ndk@v1
+      id: setup-ndk
+      if: |
+        github.event.inputs.platform == 'all' ||
+        github.event.inputs.platform == 'android'
       with:
-        tool: cargo-c
+        ndk-version: r27c
+        add-to-path: true
+        link-to-sdk: true
+        local-cache: false
+    - name: Install dependencies
+      run: .github/workflows/install-dependencies.sh test ${{ inputs.platform }}
     - name: One Step
-      run: .github/workflows/onestep.sh test all
+      run: .github/workflows/onestep.sh test ${{ inputs.platform }} ${{ inputs.draft }} ${{ inputs.verbose }}
+      env:
+        ANDROID_NDK_HOME: ${{ steps.setup-ndk.outputs.ndk-path }}

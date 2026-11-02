@@ -65,9 +65,7 @@ function do_init_a_lib()
     [[ ! -f "$lib_config" ]] && (echo "❌$lib_config config not exist,init will stop.";exit 1;)
     echo "===[init $lib_config]===================="
     [[ ! -f "$lib_config" ]] && (echo "❌$lib_config config not exist,init will stop.";exit 1;)
-    # 重置 PATCH_DIR，防止上一个库的配置残留
-    unset PATCH_DIR
-    # 加载库配置文件，设置 GIT_COMMIT、GIT_UPSTREAM、PATCH_DIR 等变量
+    unset LOCAL_SOURCE_DIR
     source "$lib_config"
     export MR_LIB_CONFIG_PATH="$lib_config"
     # 执行初始化：克隆仓库、切换 commit、应用 patch

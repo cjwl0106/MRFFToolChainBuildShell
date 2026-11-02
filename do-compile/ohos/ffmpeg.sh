@@ -38,6 +38,22 @@ CFG_FLAGS=
 CFG_FLAGS="$CFG_FLAGS $COMMON_FF_CFG_FLAGS"
 CFG_FLAGS="$CFG_FLAGS $THIRD_CFG_FLAGS"
 
+# HTTPS is part of the OHOS playback contract, not an optional host probe.
+# Fail loudly rather than silently shipping an HTTP-only package.
+if ! pkg-config --exists openssl; then
+    echo "OpenSSL is required for OHOS HTTPS. Run: ./main.sh install -p ohos -l openssl3" >&2
+    exit 1
+fi
+CFG_FLAGS="$CFG_FLAGS --enable-openssl --enable-protocol=https --enable-protocol=tls"
+
+# OHCodec is opt-in in FFmpeg and the shared profile disables all decoders.
+# Older FFmpeg versions do not expose this option; keep their OHOS builds usable.
+if "$MR_BUILD_SOURCE/configure" --help | grep -- '--enable-ohcodec' >/dev/null; then
+    CFG_FLAGS="$CFG_FLAGS --enable-ohcodec --enable-decoder=h264_oh --enable-decoder=hevc_oh --enable-encoder=h264_oh"
+fi
+# Native AAC avoids a nonfree external encoder; OHCodec provides H.264 without x264.
+CFG_FLAGS="$CFG_FLAGS --enable-encoder=aac"
+
 # HarmonyOS NEXT / OpenHarmony: use clang as linker driver via lld.
 EXTRA_LDFLAGS="-fuse-ld=lld"
 C_FLAGS="$C_FLAGS $MR_DEFAULT_CFLAGS"

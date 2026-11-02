@@ -51,10 +51,10 @@ function parse_lib_config() {
     # 获取当前平台对应的 PRE_COMPILE_TAG（如 PRE_COMPILE_TAG_IOS）
     local t=$(echo "PRE_COMPILE_TAG_$MR_PLAT" | tr '[:lower:]' '[:upper:]')
     local vt=$(eval echo "\$$t")
-
-    if test -z $vt ;then
-        echo "$t can't be nil"
-        exit
+    
+    if [[ -z "$vt" ]]; then
+        echo "❌ Missing $t in $lib_config; cannot install $config_name for $MR_PLAT." >&2
+        exit 1
     fi
 
     # PRE_COMPILE_TAG 格式示例：opus-1.3.1-231124151836
@@ -73,12 +73,18 @@ function parse_lib_config() {
 
 # 安装单个库的预编译包
 function do_install_a_lib()
-{
+(
     local lib_config="$1"
     lib_config=$(make_absolute_path "$lib_config")
     [[ ! -f "$lib_config" ]] && (echo "❌$lib_config config not exist,install will stop."; exit 1;)
 
     echo "===[install $lib_config]===================="
+    # Only tags explicitly defined by this config may be used.
+    # Clear inherited tags as well as isolating each library in a subshell.
+    local tag_var
+    for tag_var in "${!PRE_COMPILE_TAG_@}"; do
+        unset "$tag_var"
+    done
     # 加载库配置文件，获取 PRE_COMPILE_TAG 等变量
     source "$lib_config"
     # 解析预编译 tag，提取版本号
@@ -92,7 +98,7 @@ function do_install_a_lib()
         ./install-pre-lib.sh
     fi
     echo "===================================="
-}
+)
 
 function install_libs()
 {
